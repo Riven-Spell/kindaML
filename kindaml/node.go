@@ -6,9 +6,9 @@ type Node struct {
 	Activation ActivationF
 	Biases     []float64
 	Weights    []float64
-	Inputs     []Input //This neural network executes backwards, effectively.
+	Inputs     []*Input //This neural network executes backwards, effectively.
 
-	cachedValue *float64
+	cachedValue *float64 //Use this later to calculate net error
 	memos       map[float64]float64
 }
 
@@ -20,7 +20,7 @@ func (n Node) Activate() (float64, error) {
 	input := float64(0)
 
 	for k, v := range n.Inputs {
-		av, err := v.Activate()
+		av, err := (*v).Activate()
 
 		if err != nil {
 			return 0, err
@@ -36,4 +36,8 @@ func (n Node) Activate() (float64, error) {
 	x := n.Activation(input)
 	n.cachedValue = &x
 	return x, nil
+}
+
+func (n *Node) ClearMemos() { //TODO: Automate me!
+	n.memos = make(map[float64]float64)
 }
